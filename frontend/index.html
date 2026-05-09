@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pooh • المساعد الذكي 💙</title>
+    
+    <link rel="icon" href="data:,">
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 🎬 شاشة الفيديو -->
+    <div id="video-screen">
+        <video id="intro-video">
+            <source src="attachments/0509-01(1).mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- 🌐 الموقع الأصلي -->
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+    
+    <div id="ui-overlay">
+        <div id="controls">
+            <button id="intro-btn">🎬 عرض الدخول</button>
+            <button id="start-btn">🎤 تحدث مع Pooh</button>
+            <button id="reset-btn">💬 محادثة جديدة</button>
+            <button id="reload-btn">🔄 إعادة</button>
+        </div>
+        
+        <div id="state-display">💙 جاري التحميل...</div>
+    </div>
+
+    <!-- 🟩 QR Code -->
+    <div id="qr-container">
+        <button id="qr-toggle" title="امسح عشان تفتح من الموبايل 📱">📱</button>
+        
+        <div id="qr-box" class="hidden">
+            <img id="qr-image" src="" alt="QR Code">
+            <p class="qr-label">امسح عشان تفتح من الموبايل 📱</p>
+            <p class="qr-link" id="qr-link">جاري التحميل...</p>
+        </div>
+    </div>
+
+    
+    <script type="module" src="./main.js"></script>
+    
+    <script>
+        // ==========================================
+        // 🎬 كود تشغيل الفيديو
+        // ==========================================
+        const videoScreen = document.getElementById('video-screen');
+        const introVideo = document.getElementById('intro-video');
+        const introBtn = document.getElementById('intro-btn');
+        
+        let isVideoPlaying = false;
+
+        introBtn.addEventListener('click', () => {
+            if (!isVideoPlaying) {
+                introVideo.muted = false;
+                introVideo.volume = 1;
+                introVideo.currentTime = 0;
+                introVideo.play();
+                
+                videoScreen.style.display = 'flex';
+                videoScreen.style.opacity = '1';
+                
+                isVideoPlaying = true;
+                introBtn.textContent = '✖️ إيقاف الفيديو';
+                introBtn.classList.add('active');
+            } else {
+                closeVideo();
+            }
+        });
+
+        introVideo.addEventListener('ended', () => { closeVideo(); });
+
+        videoScreen.addEventListener('click', (e) => {
+            if (e.target === introVideo) { closeVideo(); }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && isVideoPlaying) { closeVideo(); }
+        });
+
+        function closeVideo() {
+            introVideo.pause();
+            videoScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                videoScreen.style.display = 'none';
+            }, 800);
+            
+            isVideoPlaying = false;
+            introBtn.textContent = '🎬 عرض الدخول';
+            introBtn.classList.remove('active');
+        }
+
+        // ==========================================
+        // 🟩 كود QR Code (بدون مكتبة خارجية)
+        // ==========================================
+        
+        const LINK_URL = "https://squad-underwear-clinking.ngrok-free.dev";
+
+        const qrLink = document.getElementById('qr-link');
+        const qrImage = document.getElementById('qr-image');
+        const qrToggle = document.getElementById('qr-toggle');
+        const qrBox = document.getElementById('qr-box');
+
+        qrLink.textContent = LINK_URL;
+
+        // ✅ استخدام Google Charts API لتوليد QR
+        qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(LINK_URL)}`;
+
+        qrToggle.addEventListener('click', () => {
+            qrBox.classList.toggle('hidden');
+        });
+
+        qrLink.addEventListener('click', () => {
+            navigator.clipboard.writeText(LINK_URL);
+            qrLink.textContent = '✅ تم النسخ!';
+            setTimeout(() => { qrLink.textContent = LINK_URL; }, 1500);
+        });
+    </script>
+</body>
+</html>
