@@ -1,1 +1,4 @@
-"frontend/attachments/*.mp4" 
+"backend/server.js" 
+"node_modules/" 
+".env" 
+"*.mp4" 
